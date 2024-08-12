@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pokemon anlegen{% endblock %}
+
+{% block body %}
+    <h1>Bereits im Pokédex:</h1>
+{% for pokemon in allPkmn %}
+    <div>
+        {{ pokemon.name }}
+    </div>
+{% endfor %}
+    <h1>Pokemon anlegen</h1>
+
+    {{ form(pokemonForm) }}
+
+{% endblock %}

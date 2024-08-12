@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+    app:
+        build:
+            dockerfile: docker/app/Dockerfile
+            context: ../
+            args:
+                PHP_IMAGE: ${PHP_IMAGE}
+                APACHE_USER: ${APACHE_USER:-www-data}
+                APACHE_U_ID: ${APACHE_U_ID:-33}
+                APACHE_G_ID: ${APACHE_G_ID:-33}
+        ports:
+        -   "${LOCAL_APACHE_PORT}:80"
+        environment:
+            APACHE_LOG_DIR: /home/www-data
+            APACHE_RUN_USER: ${APACHE_USER:-www-data}
+            APACHE_RUN_GROUP: ${APACHE_USER:-www-data}
+            APACHE_DOCUMENT_ROOT: /var/www/html/public
+            APACHE_U_ID: ${APACHE_U_ID:-33}
+            APACHE_G_ID: ${APACHE_G_ID:-33}
+        volumes:
+        -   /var/www/html/var/
+        -   /var/www/html/docker/
+        -   ../.:/var/www/html/
+        -   ./app/host.ini:/usr/local/etc/php/conf.d/host.ini
+    db:
+        image: $DB_IMAGE
+        environment:
+            - MYSQL_ROOT_PASSWORD=$DB_ROOT_PASSWORD
+            - MYSQL_USER=$DB_USER
+            - MYSQL_PASSWORD=$DB_PASSWORD
+            - MYSQL_DATABASE=$DB_NAME
+        volumes:
+        -   ./db:/docker-entrypoint-initdb.d
+        -   ./db-files:/var/lib/mysql/
+        -   ./db:/backups
+        ports:
+        -   "${DB_PORT_MAPED}:3306"
